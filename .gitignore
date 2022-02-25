@@ -1,0 +1,8 @@
+giganovel
+ulysses64
+*.iml
+.idea
+target
+build
+.gradle
+build/
