@@ -6,3 +6,6 @@ target
 build
 .gradle
 build/
+default.iprof
+trie-1.0-all
+trie-*build_artifacts.txt
