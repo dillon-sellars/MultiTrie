@@ -1,48 +1,55 @@
 https://codegolf.stackexchange.com/questions/188133/bentleys-coding-challenge-k-most-frequent-words
 
-`openjdk version "14" 2020-03-17
-OpenJDK Runtime Environment (build 14+36-1461)
-OpenJDK 64-Bit Server VM (build 14+36-1461, mixed mode, sharing)`
-java -jar build/libs/trie-1.0-all.jar ../../giganovel.txt 100000  18.36s user 0.35s system 101% cpu 18.363 total
+## java results 
 
-OpenJDK 14 with UseJVMCICompiler
-java -XX:+UnlockExperimentalVMOptions -XX:+UseJVMCICompiler -Xmx512m -Xms512m  12.99s user 0.64s system 146% cpu 9.314 total
+```
+openjdk version "17.0.2" 2022-01-18 LTS
+OpenJDK Runtime Environment Zulu17.32+13-CA (build 17.0.2+8-LTS)
+OpenJDK 64-Bit Server VM Zulu17.32+13-CA (build 17.0.2+8-LTS, mixed mode, sharing)
+```
 
-`openjdk version "13.0.2" 2020-01-14
-OpenJDK Runtime Environment Zulu13.29+9-CA (build 13.0.2+6-MTS)
-OpenJDK 64-Bit Server VM Zulu13.29+9-CA (build 13.0.2+6-MTS, mixed mode, sharing)`
-java -jar build/libs/trie-1.0-all.jar ../../giganovel.txt 100000  18.42s user 0.34s system 102% cpu 18.399 total
+time java -jar build/libs/trie-1.0-all.jar ../giganovel 100000  
+8.33s user 0.25s system 101% cpu 8.453 total
 
-GraalVM CE test results
-`openjdk version "11.0.6" 2020-01-14`
-`OpenJDK Runtime Environment GraalVM CE 20.0.0 (build 11.0.6+9-jvmci-20.0-b02)`
-`OpenJDK 64-Bit Server VM GraalVM CE 20.0.0 (build 11.0.6+9-jvmci-20.0-b02, mixed mode, sharing)`
 
-java -jar build/libs/trie-1.0-all.jar ulysses64 10  1.16s user 0.10s system 138% cpu 0.912 total
+## GraalVM CE test results
+```
+openjdk version "17.0.2" 2022-01-18
+OpenJDK Runtime Environment GraalVM CE 22.0.0.2 (build 17.0.2+8-jvmci-22.0-b05)
+OpenJDK 64-Bit Server VM GraalVM CE 22.0.0.2 (build 17.0.2+8-jvmci-22.0-b05, mixed mode, sharing)
+```
 
-java -jar build/libs/trie-1.0-all.jar ../../giganovel.txt 100000  8.60s user 0.49s system 103% cpu 8.794 total
+time java -jar build/libs/trie-1.0-all.jar ../ulysses64 10  
+0.86s user 0.03s system 85% cpu 1.038 total
 
-The remaining tests use GraalVM Enterprise Edition:
+time java -jar build/libs/trie-1.0-all.jar ../giganovel 100000  
+7.34s user 0.30s system 104% cpu 7.279 total
 
-`java version "11.0.6" 2020-01-14 LTS`
-` Java(TM) SE Runtime Environment GraalVM EE 20.0.0 (build 11.0.6+8-LTS-jvmci-20.0-b02)`
-` Java HotSpot(TM) 64-Bit Server VM GraalVM EE 20.0.0 (build 11.0.6+8-LTS-jvmci-20.0-b02, mixed mode, sharing)`
+## GraalVM Enterprise Edition:
 
-java -jar build/libs/trie-1.0-all.jar ulysses64 10  1.18s user 0.09s system 137% cpu 0.917 total
+```
+java version "17.0.2" 2022-01-18 LTS
+Java(TM) SE Runtime Environment GraalVM EE 22.0.0.2 (build 17.0.2+8-LTS-jvmci-22.0-b05)
+Java HotSpot(TM) 64-Bit Server VM GraalVM EE 22.0.0.2 (build 17.0.2+8-LTS-jvmci-22.0-b05, mixed mode, sharing)
+```
 
-java -jar build/libs/trie-1.0-all.jar ../../giganovel.txt 100000  9.29s user 0.49s system 108% cpu 8.975 total
+time java -jar build/libs/trie-1.0-all.jar ../ulysses64 10  
+0.86s user 0.02s system 83% cpu 1.060 total
+
+time java -jar build/libs/trie-1.0-all.jar ../giganovel 100000  
+7.91s user 0.26s system 104% cpu 7.848 total
+
+## GraalVM EE optimized native-image 
 
 The PGO options require the enterprise edition of GraalVM with `native-image`
-https://www.graalvm.org/docs/reference-manual/native-image/
+Requires Oracle Login
+https://www.oracle.com/downloads/graalvm-downloads.html
 
-Note: `native-image` doesn't seem to respect the PATH (it was using native-image from the community edition),
- so we prefix with $JAVA_HOME
+Compile native image with instrumentation  
+`native-image --pgo-instrument -jar build/libs/trie-1.0-all.jar`
 
-Compile native image with instrumentation
-`$JAVA_HOME/bin/native-image --pgo-instrument -jar build/libs/trie-1.0-all.jar`
-
-Run the app to generate the profiling data
-`./trie-1.0-all giganovel 100000`
+Run the app to generate the profiling data  
+`./trie-1.0-all ../giganovel 100000`
 
 This will be slow - time shows `4.50s user 0.04s system 94% cpu 4.800 total`
 
@@ -54,15 +61,27 @@ Compile
 
 Results for optimized app:
 
-./trie-1.0-all ulysses64 10  1.96s user 0.03s system 99% cpu 1.995 total
+time ./trie-1.0-all ../giganovel 100000  
+4.14s user 0.26s system 96% cpu 4.582 total
 
-`time ./trie-1.0-all ulysses64 10`
+time ./trie-1.0-all ../ulysses64 10  
+0.35s user 0.02s system 99% cpu 0.366 total
 
-time now shows `0.60s user 0.02s system 99% cpu 0.632 total`
+## csharp precompiled
+bin/Release/net6.0/csharptrie ../giganovel 100000  
+8.16s user 0.23s system 97% cpu 8.627 total
 
+time bin/Release/net6.0/csharptrie ../ulysses64 10  
+0.65s user 0.02s system 96% cpu 0.704 total
 
-csharp precompiled
-bin/Release/netcoreapp3.1/osx.10.15-x64/publish/csharptrie ../giganovel.txt   9.37s user 0.22s system 98% cpu 9.749 total
+## rust
+time target/release/rust-trie ../giganovel 100000  
+1.81s user 0.53s system 88% cpu 2.637 total
 
-rust
-target/release/rust-trie ../giganovel.txt 100000  2.50s user 0.43s system 98% cpu 2.979 total
+time target/release/rust-trie ../ulysses64 10  
+0.25s user 0.05s system 99% cpu 0.302 total
+
+## python
+
+time python3 ./trie.py  # (giganovel)
+39.68s user 0.23s system 99% cpu 40.186 total

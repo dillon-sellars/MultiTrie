@@ -25,6 +25,6 @@ def freq(textfile, k):
 from time import time
 
 start = time()
-print('\n'.join('{}:\t{}'.format(f, w) for w, f in freq('../ulysses64', 10)))
+print('\n'.join('{}:\t{}'.format(f, w) for w, f in freq('../giganovel', 100000)))
 end = time()
 print(end - start)
