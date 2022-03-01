@@ -5,6 +5,7 @@ import kotlin.system.exitProcess
 
 @ExperimentalUnsignedTypes
 fun main(args: Array<String>) {
+    val start = System.currentTimeMillis()
     if (args.isEmpty()) {
         println("Filename required")
         exitProcess(1)
@@ -13,7 +14,8 @@ fun main(args: Array<String>) {
     val k = if (args.size > 1) args[1].toInt() else 10
 
     val data: UByteArray = Paths.get(filename).toFile().readBytes().asUByteArray()
-    for ((index, b) in data.withIndex()) {
+    for (index in data.indices) {
+        val b = data[index]
         data[index] = ((b or 32u) - 97u).toUByte()
     }
 
@@ -44,6 +46,8 @@ fun main(args: Array<String>) {
         println(node.word + "\t" + node.count)
     }
 
+    System.err.println("Time taken: ${System.currentTimeMillis() - start}ms")
+
 }
 
 class Trie {
@@ -72,11 +76,12 @@ class Node(private val parent: Node?, private val index: Int) {
     @ExperimentalUnsignedTypes
     fun traverse(b: UByte): Node {
         val idx = b.toInt()
-        val myNodes = nodes
-        if (myNodes == null) {
-            nodes = arrayOfNulls(26)
-            return Node(this, idx).also { nodes!![idx] = it }
+
+        nodes?.let { myNodes ->
+            return myNodes[idx] ?: Node(this, idx).also { myNodes[idx] = it }
         }
-        return myNodes[idx] ?: Node(this, idx).also { myNodes[idx] = it }
+
+        nodes = Array(26) { null }
+        return Node(this, idx).also { nodes!![idx] = it }
     }
 }
